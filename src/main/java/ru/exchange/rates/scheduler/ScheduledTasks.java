@@ -19,7 +19,6 @@ public class ScheduledTasks {
     @Scheduled(fixedRate = 5000)
     public void saveRatesFromAllSources() {
         exchangeRatesService.saveRatesFromAllSources();
-        exchangeRatesService.getLastExchangeRate("USD", "USD");
     }
 
 }

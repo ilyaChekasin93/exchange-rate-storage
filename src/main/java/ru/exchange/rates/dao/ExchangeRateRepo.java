@@ -16,7 +16,10 @@ public interface ExchangeRateRepo extends CrudRepository<ExchangeRateEntity, Lon
 
     List<ExchangeRateEntity> findAll();
 
-    @Query("SELECT e FROM ExchangeRateEntity e where e.base = :from AND e.currency = :to")
+    @Query("SELECT e FROM ExchangeRateEntity e where e.currencyFrom = :from AND e.currencyTo = :to")
     Optional<ExchangeRateEntity> findByFromAndTo(@Param("from") CurrencyEntity from, @Param("to") CurrencyEntity to);
+
+    @Query("SELECT e FROM ExchangeRateEntity e where e.currencyFrom = :from")
+    List<ExchangeRateEntity> findByFrom(@Param("from") CurrencyEntity from);
 
 }

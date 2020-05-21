@@ -1,14 +1,13 @@
-package ru.exchange.rates.dto;
+package ru.exchange.rates.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ExchangeRateDto {
+@AllArgsConstructor
+public class ExchangeRateResponse {
 
     private String base;
 

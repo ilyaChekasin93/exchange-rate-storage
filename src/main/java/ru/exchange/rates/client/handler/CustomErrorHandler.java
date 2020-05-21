@@ -1,4 +1,4 @@
-package ru.exchange.rates.handler;
+package ru.exchange.rates.client.handler;
 
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;

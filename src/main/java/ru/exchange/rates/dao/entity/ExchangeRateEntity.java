@@ -21,10 +21,10 @@ public class ExchangeRateEntity {
     private ExchangeRateSourceEntity source;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    private CurrencyEntity base;
+    private CurrencyEntity currencyFrom;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
-    private CurrencyEntity currency;
+    private CurrencyEntity currencyTo;
 
     private Double value;
 

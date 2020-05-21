@@ -1,6 +1,9 @@
 package ru.exchange.rates.controller;
 
 import org.springframework.web.bind.annotation.PathVariable;
+import ru.exchange.rates.dto.ExchangeRateDto;
+import ru.exchange.rates.mapper.Mapper;
+import ru.exchange.rates.model.ExchangeRateResponse;
 import ru.exchange.rates.service.ExchangeRatesService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -16,15 +19,18 @@ public class ExchangeRatesController {
 
     private ExchangeRatesService ratesService;
 
-    public ExchangeRatesController(ExchangeRatesService ratesService){
+    private Mapper mapper;
+
+    public ExchangeRatesController(ExchangeRatesService ratesService, Mapper mapper){
         this.ratesService = ratesService;
+        this.mapper = mapper;
     }
 
     @GetMapping(path = "/rates/{from}/{to}")
-    public String getRate(@PathVariable("from") String from, @PathVariable("to") String to) {
-        ratesService.getLastExchangeRate(from, to);
+    public ExchangeRateResponse getRate(@PathVariable("from") String from, @PathVariable("to") String to) {
+        ExchangeRateDto exchangeRateDto = ratesService.getLastExchangeRate(from, to);
 
-        return "Hallow";
+        return mapper.exchangeRateDto2ExchangeRateResponse(exchangeRateDto);
     }
 
 }

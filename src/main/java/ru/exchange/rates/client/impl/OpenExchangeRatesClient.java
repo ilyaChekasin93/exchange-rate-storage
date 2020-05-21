@@ -3,7 +3,7 @@ package ru.exchange.rates.client.impl;
 import ru.exchange.rates.client.ExchangeRatesClient;
 import ru.exchange.rates.dto.ExchangeRateDto;
 import ru.exchange.rates.dto.ExchangeRatesDto;
-import ru.exchange.rates.handler.CustomErrorHandler;
+import ru.exchange.rates.client.handler.CustomErrorHandler;
 import ru.exchange.rates.mapper.Mapper;
 import ru.exchange.rates.model.OpenExchangeRatesResponse;
 import ru.exchange.rates.utils.Helpers;

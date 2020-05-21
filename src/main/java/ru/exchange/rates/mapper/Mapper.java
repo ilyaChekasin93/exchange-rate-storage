@@ -2,6 +2,7 @@ package ru.exchange.rates.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.exchange.rates.dto.ExchangeRateDto;
+import ru.exchange.rates.model.ExchangeRateResponse;
 import ru.exchange.rates.model.OpenExchangeRatesResponse;
 
 import java.util.List;
@@ -24,6 +25,16 @@ public class Mapper {
         }).collect(Collectors.toList());
 
         return exchangeRatesDtoList;
+    }
+
+    public ExchangeRateResponse exchangeRateDto2ExchangeRateResponse(ExchangeRateDto exchangeRateDto){
+        ExchangeRateResponse exchangeRateResponse = new ExchangeRateResponse();
+
+        exchangeRateResponse.setBase(exchangeRateDto.getBase());
+        exchangeRateResponse.setRateName(exchangeRateDto.getRateName());
+        exchangeRateResponse.setRateValue(exchangeRateDto.getRateValue());
+
+        return exchangeRateResponse;
     }
 
 }

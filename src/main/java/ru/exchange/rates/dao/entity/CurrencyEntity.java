@@ -21,23 +21,23 @@ public class CurrencyEntity  {
 
     private String name;
 
-    @OneToMany(mappedBy = "base", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<ExchangeRateEntity> exchangeRatesTo;
-
-    @OneToMany(mappedBy = "currency", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "currencyFrom", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ExchangeRateEntity> exchangeRatesFrom;
+
+    @OneToMany(mappedBy = "currencyTo", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<ExchangeRateEntity> exchangeRatesTo;
 
     public CurrencyEntity(String name){
         this.name = name;
     }
 
-    public void addExchangeRatesTo(ExchangeRateEntity exchangeRateEntity){
-        exchangeRatesTo = exchangeRatesTo == null ? new ArrayList<>() : exchangeRatesTo;
-        exchangeRatesTo.add(exchangeRateEntity);
-    }
-
     public void addExchangeRatesFrom(ExchangeRateEntity exchangeRateEntity){
         exchangeRatesFrom = exchangeRatesFrom == null ? new ArrayList<>() : exchangeRatesFrom;
         exchangeRatesFrom.add(exchangeRateEntity);
+    }
+
+    public void addExchangeRatesTo(ExchangeRateEntity exchangeRateEntity){
+        exchangeRatesTo = exchangeRatesTo == null ? new ArrayList<>() : exchangeRatesTo;
+        exchangeRatesTo.add(exchangeRateEntity);
     }
 }

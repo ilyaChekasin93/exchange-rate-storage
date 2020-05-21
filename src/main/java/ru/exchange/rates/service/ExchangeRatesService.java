@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.exchange.rates.dao.CurrencyEntityRepo;
 import ru.exchange.rates.dao.ExchangeRateRepo;
 import ru.exchange.rates.dao.ExchangeRateSourceRepo;
+import ru.exchange.rates.exception.CurrencyNotFoundException;
 import ru.exchange.rates.factory.ExchangeRateClientFactory;
 import org.springframework.stereotype.Service;
 import ru.exchange.rates.dao.entity.CurrencyEntity;
@@ -52,11 +53,29 @@ public class ExchangeRatesService {
         exchangeRateRepo.saveAll(exchangeRateEntities);
     }
 
-    public void getLastExchangeRate(String from, String to) {
-        CurrencyEntity currencyFrom = currencyEntityRepo.findByName(from).get();
-        CurrencyEntity currencyTo = currencyEntityRepo.findByName(to).get();
+    public ExchangeRateDto getLastExchangeRate(String from, String to) {
+        CurrencyEntity currencyFrom = currencyEntityRepo.findByName(from)
+                .orElseThrow(() -> new RuntimeException(String.format("Currency %s not found", from)));
 
-        exchangeRateRepo.findByFromAndTo(currencyFrom, currencyTo);
+        CurrencyEntity currencyTo = currencyEntityRepo.findByName(to)
+                .orElseThrow(() -> new CurrencyNotFoundException(from));
+
+        Double exchangeRateValue = exchangeRateRepo.findByFromAndTo(currencyFrom, currencyTo)
+                .orElseThrow(() -> new RuntimeException(String.format("Exchange rate from %s to %s not found", from, to)))
+                .getValue();
+
+        return new ExchangeRateDto(from, to, exchangeRateValue);
+    }
+
+    public List<String> getAllCurrencyByFrom(String from) {
+        CurrencyEntity currencyFrom = currencyEntityRepo.findByName(from)
+                .orElseThrow(() -> new RuntimeException(String.format("Currency %s not found", from)));
+
+        List<ExchangeRateEntity> exchangeRateEntities = exchangeRateRepo.findByFrom(currencyFrom);
+
+        return exchangeRateEntities.stream()
+                .map(exchangeRateEntity -> exchangeRateEntity.getCurrencyTo().getName())
+                .collect(Collectors.toList());
     }
 
     private List<ExchangeRateEntity> exchangeRatesDto2ListExchangeRateEntity(ExchangeRatesDto ratesDto){
@@ -93,8 +112,8 @@ public class ExchangeRatesService {
 
         ExchangeRateEntity exchangeRateEntity = new ExchangeRateEntity();
 
-        exchangeRateEntity.setCurrency(currencyEntity);
-        exchangeRateEntity.setBase(baseCurrencyEntity);
+        exchangeRateEntity.setCurrencyTo(currencyEntity);
+        exchangeRateEntity.setCurrencyFrom(baseCurrencyEntity);
 
         currencyEntity.addExchangeRatesFrom(exchangeRateEntity);
         baseCurrencyEntity.addExchangeRatesFrom(exchangeRateEntity);
