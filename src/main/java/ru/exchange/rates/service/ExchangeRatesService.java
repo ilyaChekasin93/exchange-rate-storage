@@ -1,5 +1,6 @@
 package ru.exchange.rates.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.exchange.rates.dao.CurrencyEntityRepo;
 import ru.exchange.rates.dao.ExchangeRateRepo;
 import ru.exchange.rates.dao.ExchangeRateSourceRepo;
@@ -29,16 +30,19 @@ public class ExchangeRatesService {
     private ExchangeRateRepo exchangeRateRepo;
 
 
-    public ExchangeRatesService(ExchangeRateClientFactory clientFactory, ExchangeRateSourceRepo exchangeRateSourceRepo, CurrencyEntityRepo сurrencyEntityRepo, ExchangeRateRepo exchangeRateRepo) {
+    public ExchangeRatesService(ExchangeRateClientFactory clientFactory, ExchangeRateSourceRepo exchangeRateSourceRepo,
+                                CurrencyEntityRepo сurrencyEntityRepo, ExchangeRateRepo exchangeRateRepo) {
         this.clients = clientFactory.getAllExchangeRatesClients();
         this.exchangeRateSourceRepo = exchangeRateSourceRepo;
         this.currencyEntityRepo = сurrencyEntityRepo;
         this.exchangeRateRepo = exchangeRateRepo;
     }
 
-    public void saveRatesFromAllSources(){
-        List<ExchangeRatesDto> exchangeRatesDtolist = clients.stream().map(c -> c.getAllRates()).collect(Collectors.toList());
-
+    @Transactional
+    public void saveRatesFromAllSources() {
+        List<ExchangeRatesDto> exchangeRatesDtolist = clients.stream()
+                .map(ExchangeRatesClient::getAllRates)
+                .collect(Collectors.toList());
 
         List<ExchangeRateEntity> exchangeRateEntities = exchangeRatesDtolist.stream()
                 .map(ratesDto -> exchangeRatesDto2ListExchangeRateEntity(ratesDto))
@@ -48,7 +52,7 @@ public class ExchangeRatesService {
         exchangeRateRepo.saveAll(exchangeRateEntities);
     }
 
-    public void getLastExchangeRate(String from, String to){
+    public void getLastExchangeRate(String from, String to) {
         CurrencyEntity currencyFrom = currencyEntityRepo.findByName(from).get();
         CurrencyEntity currencyTo = currencyEntityRepo.findByName(to).get();
 
@@ -111,18 +115,11 @@ public class ExchangeRatesService {
                 : exchangeRateSourceRepo.save(new ExchangeRateSourceEntity(url));
     }
 
-    private CurrencyEntity getCurrencyEntityByName(String currencyName){
+    private CurrencyEntity getCurrencyEntityByName(String currencyName) {
         Optional<CurrencyEntity> optionalCurrencyEntity = currencyEntityRepo.findByName(currencyName);
-        CurrencyEntity result;
 
-        if(optionalCurrencyEntity.isPresent()){
-            result = optionalCurrencyEntity.get();
-        }else {
-            CurrencyEntity currencyEntity = new CurrencyEntity(currencyName);
-            currencyEntityRepo.save(currencyEntity);
-            result = currencyEntity;
-        }
-
-        return result;
+        return optionalCurrencyEntity.isPresent()
+                ? optionalCurrencyEntity.get()
+                : currencyEntityRepo.saveAndFlush(new CurrencyEntity(currencyName));
     }
 }
