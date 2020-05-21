@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -24,6 +25,11 @@ public class ExchangeRateSourceEntity {
 
     public ExchangeRateSourceEntity(String url){
         this.url = url;
+    }
+
+    public void addExchangeRates(ExchangeRateEntity exchangeRateEntity){
+        exchangeRates = exchangeRates == null ? new ArrayList<>() : exchangeRates;
+        exchangeRates.add(exchangeRateEntity);
     }
 
 }

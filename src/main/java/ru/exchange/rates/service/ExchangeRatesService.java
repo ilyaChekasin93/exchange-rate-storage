@@ -40,44 +40,12 @@ public class ExchangeRatesService {
         List<ExchangeRatesDto> exchangeRatesDtolist = clients.stream().map(c -> c.getAllRates()).collect(Collectors.toList());
 
 
-        List<ExchangeRateEntity> result = exchangeRatesDtolist.stream().map(exchangeRatesDto -> {
+        List<ExchangeRateEntity> exchangeRateEntities = exchangeRatesDtolist.stream()
+                .map(ratesDto -> exchangeRatesDto2ListExchangeRateEntity(ratesDto))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
 
-            String time = exchangeRatesDto.getDate();
-
-            String sourceUrl = exchangeRatesDto.getSource();
-            ExchangeRateSourceEntity exchangeRateSourceEntity
-                    = exchangeRateSourceRepo.findByUrl(sourceUrl).orElse(new ExchangeRateSourceEntity(sourceUrl));
-
-            List<ExchangeRateDto> exchangeRateDtoList = exchangeRatesDto.getRates();
-
-            List<ExchangeRateEntity> exchangeRateEntities = exchangeRateDtoList.stream().map(exchangeRateDto -> {
-
-                String currencyName = exchangeRateDto.getRateName();
-                CurrencyEntity currencyEntity = getCurrencyEntityByName(currencyName);
-
-                String baseCurrencyName = exchangeRateDto.getBase();
-                CurrencyEntity baseCurrencyEntity = getCurrencyEntityByName(baseCurrencyName);
-
-                Double rateValue = exchangeRateDto.getRateValue();
-
-                ExchangeRateEntity exchangeRateEntity = new ExchangeRateEntity();
-
-                exchangeRateEntity.setCurrency(currencyEntity);
-                exchangeRateEntity.setBase(baseCurrencyEntity);
-
-                exchangeRateEntity.setTime(time);
-                exchangeRateEntity.setSource(exchangeRateSourceEntity);
-                exchangeRateEntity.setValue(rateValue);
-
-                return exchangeRateEntity;
-
-            }).collect(Collectors.toList());
-
-            return exchangeRateEntities;
-
-        }).flatMap(List::stream).collect(Collectors.toList());
-
-        exchangeRateRepo.saveAll(result);
+        exchangeRateRepo.saveAll(exchangeRateEntities);
     }
 
     public void getLastExchangeRate(String from, String to){
@@ -85,6 +53,62 @@ public class ExchangeRatesService {
         CurrencyEntity currencyTo = currencyEntityRepo.findByName(to).get();
 
         exchangeRateRepo.findByFromAndTo(currencyFrom, currencyTo);
+    }
+
+    private List<ExchangeRateEntity> exchangeRatesDto2ListExchangeRateEntity(ExchangeRatesDto ratesDto){
+        String time = ratesDto.getDate();
+
+        String sourceUrl = ratesDto.getSource();
+        ExchangeRateSourceEntity exchangeRateSourceEntity = getSourceByUrl(sourceUrl);
+
+        List<ExchangeRateDto> exchangeRateDtoList = ratesDto.getRates();
+
+        List<ExchangeRateEntity> exchangeRateEntities = exchangeRateDtoList.stream().map(rateDto -> {
+            ExchangeRateEntity exchangeRateEntity = exchangeRateDto2ExchangeRateEntity(rateDto);
+
+            exchangeRateEntity.setSource(exchangeRateSourceEntity);
+            exchangeRateSourceEntity.addExchangeRates(exchangeRateEntity);
+
+            exchangeRateEntity.setTime(time);
+
+            return exchangeRateEntity;
+
+        }).collect(Collectors.toList());
+
+        return exchangeRateEntities;
+    }
+
+    private ExchangeRateEntity exchangeRateDto2ExchangeRateEntity(ExchangeRateDto rateDto) {
+        String currencyName = rateDto.getRateName();
+        CurrencyEntity currencyEntity = getCurrencyEntityByName(currencyName);
+
+        String baseCurrencyName = rateDto.getBase();
+        CurrencyEntity baseCurrencyEntity = getCurrencyEntityByName(baseCurrencyName);
+
+        Double rateValue = rateDto.getRateValue();
+
+        ExchangeRateEntity exchangeRateEntity = new ExchangeRateEntity();
+
+        exchangeRateEntity.setCurrency(currencyEntity);
+        exchangeRateEntity.setBase(baseCurrencyEntity);
+
+        currencyEntity.addExchangeRatesFrom(exchangeRateEntity);
+        baseCurrencyEntity.addExchangeRatesFrom(exchangeRateEntity);
+
+        currencyEntity.addExchangeRatesTo(exchangeRateEntity);
+        baseCurrencyEntity.addExchangeRatesTo(exchangeRateEntity);
+
+        exchangeRateEntity.setValue(rateValue);
+
+        return exchangeRateEntity;
+    }
+
+    private ExchangeRateSourceEntity getSourceByUrl(String url) {
+        Optional<ExchangeRateSourceEntity> optionalSourceEntity = exchangeRateSourceRepo.findByUrl(url);
+
+        return optionalSourceEntity.isPresent()
+                ? optionalSourceEntity.get()
+                : exchangeRateSourceRepo.save(new ExchangeRateSourceEntity(url));
     }
 
     private CurrencyEntity getCurrencyEntityByName(String currencyName){

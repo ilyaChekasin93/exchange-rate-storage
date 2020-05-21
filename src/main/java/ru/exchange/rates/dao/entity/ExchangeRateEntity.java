@@ -20,10 +20,10 @@ public class ExchangeRateEntity {
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private ExchangeRateSourceEntity source;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private CurrencyEntity base;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private CurrencyEntity currency;
 
     private Double value;
