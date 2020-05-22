@@ -5,6 +5,7 @@ import ru.exchange.rates.dao.CurrencyEntityRepo;
 import ru.exchange.rates.dao.ExchangeRateRepo;
 import ru.exchange.rates.dao.ExchangeRateSourceRepo;
 import ru.exchange.rates.exception.CurrencyNotFoundException;
+import ru.exchange.rates.exception.ExchangeRateNotFoundException;
 import ru.exchange.rates.factory.ExchangeRateClientFactory;
 import org.springframework.stereotype.Service;
 import ru.exchange.rates.dao.entity.CurrencyEntity;
@@ -15,7 +16,6 @@ import ru.exchange.rates.dto.ExchangeRateDto;
 import ru.exchange.rates.dto.ExchangeRatesDto;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -55,13 +55,13 @@ public class ExchangeRatesService {
 
     public ExchangeRateDto getLastExchangeRate(String from, String to) {
         CurrencyEntity currencyFrom = currencyEntityRepo.findByName(from)
-                .orElseThrow(() -> new RuntimeException(String.format("Currency %s not found", from)));
-
-        CurrencyEntity currencyTo = currencyEntityRepo.findByName(to)
                 .orElseThrow(() -> new CurrencyNotFoundException(from));
 
+        CurrencyEntity currencyTo = currencyEntityRepo.findByName(to)
+                .orElseThrow(() -> new CurrencyNotFoundException(to));
+
         Double exchangeRateValue = exchangeRateRepo.findByFromAndTo(currencyFrom, currencyTo)
-                .orElseThrow(() -> new RuntimeException(String.format("Exchange rate from %s to %s not found", from, to)))
+                .orElseThrow(() -> new ExchangeRateNotFoundException(from, to))
                 .getValue();
 
         return new ExchangeRateDto(from, to, exchangeRateValue);
@@ -69,7 +69,7 @@ public class ExchangeRatesService {
 
     public List<String> getAllCurrencyByFrom(String from) {
         CurrencyEntity currencyFrom = currencyEntityRepo.findByName(from)
-                .orElseThrow(() -> new RuntimeException(String.format("Currency %s not found", from)));
+                .orElseThrow(() -> new CurrencyNotFoundException(from));
 
         List<ExchangeRateEntity> exchangeRateEntities = exchangeRateRepo.findByFrom(currencyFrom);
 
@@ -127,18 +127,12 @@ public class ExchangeRatesService {
     }
 
     private ExchangeRateSourceEntity getSourceByUrl(String url) {
-        Optional<ExchangeRateSourceEntity> optionalSourceEntity = exchangeRateSourceRepo.findByUrl(url);
-
-        return optionalSourceEntity.isPresent()
-                ? optionalSourceEntity.get()
-                : exchangeRateSourceRepo.save(new ExchangeRateSourceEntity(url));
+        return exchangeRateSourceRepo.findByUrl(url)
+                .orElse(exchangeRateSourceRepo.saveAndFlush(new ExchangeRateSourceEntity(url)));
     }
 
     private CurrencyEntity getCurrencyEntityByName(String currencyName) {
-        Optional<CurrencyEntity> optionalCurrencyEntity = currencyEntityRepo.findByName(currencyName);
-
-        return optionalCurrencyEntity.isPresent()
-                ? optionalCurrencyEntity.get()
-                : currencyEntityRepo.saveAndFlush(new CurrencyEntity(currencyName));
+        return currencyEntityRepo.findByName(currencyName)
+                .orElse(currencyEntityRepo.saveAndFlush(new CurrencyEntity(currencyName)));
     }
 }

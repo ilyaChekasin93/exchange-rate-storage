@@ -1,6 +1,6 @@
 package ru.exchange.rates.dao;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.exchange.rates.dao.entity.ExchangeRateSourceEntity;
 
@@ -9,7 +9,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface ExchangeRateSourceRepo extends CrudRepository<ExchangeRateSourceEntity, Long> {
+public interface ExchangeRateSourceRepo extends JpaRepository<ExchangeRateSourceEntity, Long> {
 
     List<ExchangeRateSourceEntity> findAll();
 

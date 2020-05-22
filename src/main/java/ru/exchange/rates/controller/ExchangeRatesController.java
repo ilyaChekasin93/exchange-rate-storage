@@ -27,7 +27,7 @@ public class ExchangeRatesController {
     }
 
     @GetMapping(path = "/rates/{from}/{to}")
-    public ExchangeRateResponse getRate(@PathVariable("from") String from, @PathVariable("to") String to) {
+    public ExchangeRateResponse getRateByFromAndTo(@PathVariable("from") String from, @PathVariable("to") String to) {
         ExchangeRateDto exchangeRateDto = ratesService.getLastExchangeRate(from, to);
 
         return mapper.exchangeRateDto2ExchangeRateResponse(exchangeRateDto);

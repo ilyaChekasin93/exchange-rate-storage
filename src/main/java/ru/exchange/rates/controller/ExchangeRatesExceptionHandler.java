@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.exchange.rates.exception.CurrencyNotFoundException;
+import ru.exchange.rates.exception.ExchangeRateNotFoundException;
 import ru.exchange.rates.model.AllCurrencyByFromResponse;
+import ru.exchange.rates.model.ErrorResponse;
 import ru.exchange.rates.service.ExchangeRatesService;
 
 import java.util.List;
@@ -21,13 +23,20 @@ public class ExchangeRatesExceptionHandler extends ResponseEntityExceptionHandle
         this.exchangeRatesService = exchangeRatesService;
     }
 
-    @ExceptionHandler(CurrencyNotFoundException.class)
-    public final AllCurrencyByFromResponse handleCurrencyToNotFoundException(CurrencyNotFoundException exception) {
+    @ExceptionHandler(ExchangeRateNotFoundException.class)
+    public final AllCurrencyByFromResponse handleExchangeRateNotFoundException(ExchangeRateNotFoundException exception) {
         String message = exception.getMessage();
-        String notFoundCurrency = exception.getCurrencyName();
-        List<String> allToNames = exchangeRatesService.getAllCurrencyByFrom(notFoundCurrency);
+        String currencyTo = exception.getCurrencyTo();
+        List<String> allToNames = exchangeRatesService.getAllCurrencyByFrom(currencyTo);
 
         return new AllCurrencyByFromResponse(message, allToNames);
+    }
+
+    @ExceptionHandler(CurrencyNotFoundException.class)
+    public final ErrorResponse handleCurrencyNotFoundException(CurrencyNotFoundException exception) {
+        String message = exception.getMessage();
+
+        return new ErrorResponse(message);
     }
 
 }

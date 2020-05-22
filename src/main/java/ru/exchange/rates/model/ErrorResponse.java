@@ -7,12 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExchangeRateResponse {
+public class ErrorResponse {
 
-    private String from;
-
-    private String to;
-
-    private Double value;
+    private String message;
 
 }
