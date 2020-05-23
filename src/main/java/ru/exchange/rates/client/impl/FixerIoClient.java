@@ -9,7 +9,6 @@ import ru.exchange.rates.dto.ExchangeRateDto;
 import ru.exchange.rates.dto.ExchangeRatesDto;
 import ru.exchange.rates.mapper.Mapper;
 import ru.exchange.rates.model.FixerIoResponse;
-import ru.exchange.rates.utils.Helpers;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class FixerIoClient extends AbstractExchangeRaresClient {
         ResponseEntity<FixerIoResponse> responseEntity = restTemplate.getForEntity(url, FixerIoResponse.class);
         FixerIoResponse openExchangeRatesResponse = responseEntity.getBody();
         List<ExchangeRateDto> exchangeRatesDtos = mapper.fixerIoResponse2ExchangeRatesDto(openExchangeRatesResponse);
-        String currentDate = Helpers.getCurrentDate();
+        String currentDate = getCurrentDate();
 
         ExchangeRatesDto listExchangeRateDto = new ExchangeRatesDto();
         listExchangeRateDto.setRates(exchangeRatesDtos);

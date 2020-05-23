@@ -5,7 +5,6 @@ import ru.exchange.rates.dto.ExchangeRatesDto;
 import ru.exchange.rates.client.handler.CustomErrorHandler;
 import ru.exchange.rates.mapper.Mapper;
 import ru.exchange.rates.model.OpenExchangeRatesResponse;
-import ru.exchange.rates.utils.Helpers;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -39,7 +38,7 @@ public class OpenExchangeRatesClient extends AbstractExchangeRaresClient {
         ResponseEntity<OpenExchangeRatesResponse> responseEntity = restTemplate.getForEntity(url, OpenExchangeRatesResponse.class);
         OpenExchangeRatesResponse openExchangeRatesResponse = responseEntity.getBody();
         List<ExchangeRateDto> exchangeRatesDtos = mapper.openExchangeRatesResponse2ExchangeRatesDto(openExchangeRatesResponse);
-        String currentDate = Helpers.getCurrentDate();
+        String currentDate = getCurrentDate();
 
         ExchangeRatesDto listExchangeRateDto = new ExchangeRatesDto();
         listExchangeRateDto.setRates(exchangeRatesDtos);
