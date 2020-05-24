@@ -2,7 +2,7 @@ package ru.exchange.rates.controller;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.exchange.rates.dto.ExchangeRateDto;
-import ru.exchange.rates.mapper.Mapper;
+import ru.exchange.rates.mapper.ExchangeRateMapper;
 import ru.exchange.rates.model.ExchangeRateResponse;
 import ru.exchange.rates.service.ExchangeRatesService;
 import lombok.AccessLevel;
@@ -19,18 +19,18 @@ public class ExchangeRatesController {
 
     private ExchangeRatesService ratesService;
 
-    private Mapper mapper;
+    private ExchangeRateMapper exchangeRateMapper;
 
-    public ExchangeRatesController(ExchangeRatesService ratesService, Mapper mapper){
+    public ExchangeRatesController(ExchangeRatesService ratesService, ExchangeRateMapper exchangeRateMapper){
         this.ratesService = ratesService;
-        this.mapper = mapper;
+        this.exchangeRateMapper = exchangeRateMapper;
     }
 
     @GetMapping(path = "/rates/{from}/{to}")
     public ExchangeRateResponse getRateByFromAndTo(@PathVariable("from") String from, @PathVariable("to") String to) {
         ExchangeRateDto exchangeRateDto = ratesService.getLastExchangeRate(from, to);
 
-        return mapper.exchangeRateDto2ExchangeRateResponse(exchangeRateDto);
+        return exchangeRateMapper.exchangeRateDto2ExchangeRateResponse(exchangeRateDto);
     }
 
 }

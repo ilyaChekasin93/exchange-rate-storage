@@ -102,13 +102,13 @@ public class ExchangeRatesService {
     }
 
     private ExchangeRateEntity exchangeRateDto2ExchangeRateEntity(ExchangeRateDto rateDto) {
-        String currencyName = rateDto.getRateName();
-        CurrencyEntity currencyEntity = getCurrencyEntityByName(currencyName);
+        String currencyTo = rateDto.getCurrencyTo();
+        CurrencyEntity currencyEntity = getCurrencyEntityByName(currencyTo);
 
-        String baseCurrencyName = rateDto.getBase();
-        CurrencyEntity baseCurrencyEntity = getCurrencyEntityByName(baseCurrencyName);
+        String currencyFrom = rateDto.getCurrencyFrom();
+        CurrencyEntity baseCurrencyEntity = getCurrencyEntityByName(currencyFrom);
 
-        Double rateValue = rateDto.getRateValue();
+        Double exchangeRateValue = rateDto.getExchangeRateValue();
 
         ExchangeRateEntity exchangeRateEntity = new ExchangeRateEntity();
 
@@ -121,7 +121,7 @@ public class ExchangeRatesService {
         currencyEntity.addExchangeRatesTo(exchangeRateEntity);
         baseCurrencyEntity.addExchangeRatesTo(exchangeRateEntity);
 
-        exchangeRateEntity.setValue(rateValue);
+        exchangeRateEntity.setValue(exchangeRateValue);
 
         return exchangeRateEntity;
     }

@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ExchangeRateDto {
 
-    private String base;
+    private String currencyFrom;
 
-    private String rateName;
+    private String currencyTo;
 
-    private Double rateValue;
+    private Double exchangeRateValue;
 
 }

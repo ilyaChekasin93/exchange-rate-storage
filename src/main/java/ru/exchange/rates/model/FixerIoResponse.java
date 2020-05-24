@@ -2,7 +2,7 @@ package ru.exchange.rates.model;
 
 import lombok.Data;
 
-import java.util.HashMap;
+import java.util.Map;
 
 
 @Data
@@ -16,6 +16,6 @@ public class FixerIoResponse {
 
     private String base;
 
-    private HashMap<String, Double> rates;
+    private Map<String, Double> rates;
 
 }
