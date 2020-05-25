@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ExchangeRateNotFoundException extends RuntimeException {
+public class ExchangeRateNotFoundException extends AppBaseException {
 
     private String currencyTo;
 

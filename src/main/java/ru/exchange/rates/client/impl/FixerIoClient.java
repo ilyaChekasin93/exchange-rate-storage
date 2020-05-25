@@ -6,14 +6,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.exchange.rates.client.ExchangeRatesClient;
-import ru.exchange.rates.client.handler.CustomErrorHandler;
-import ru.exchange.rates.dto.ExchangeRateDto;
+import ru.exchange.rates.client.handler.ExchangeRatesClientErrorHandler;
 import ru.exchange.rates.dto.ExchangeRatesDto;
-import ru.exchange.rates.mapper.ExchangeRateMapper;
+import ru.exchange.rates.mapper.FixerIoMapper;
 import ru.exchange.rates.model.FixerIoResponse;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.exchange.rates.utils.DateUtils.getCurrentDate;
 
@@ -21,9 +18,9 @@ import static ru.exchange.rates.utils.DateUtils.getCurrentDate;
 @Component
 public class FixerIoClient implements ExchangeRatesClient {
 
-    private ExchangeRateMapper mapper;
-
     private RestTemplate restTemplate;
+
+    private FixerIoMapper mapper;
 
     private String password;
 
@@ -32,7 +29,7 @@ public class FixerIoClient implements ExchangeRatesClient {
     private static final String BASE_URL = "http://data.fixer.io/api/";
 
 
-    public FixerIoClient(RestTemplateBuilder restTemplateBuilder, CustomErrorHandler customErrorHandler, ExchangeRateMapper mapper) {
+    public FixerIoClient(RestTemplateBuilder restTemplateBuilder, ExchangeRatesClientErrorHandler customErrorHandler, FixerIoMapper mapper) {
         this.restTemplate = restTemplateBuilder.build();
         restTemplate.setErrorHandler(customErrorHandler);
         this.password = System.getenv(PASSWORD_ENV_NAME);
@@ -49,14 +46,7 @@ public class FixerIoClient implements ExchangeRatesClient {
         ResponseEntity<FixerIoResponse> responseEntity = restTemplate.getForEntity(url, FixerIoResponse.class);
         FixerIoResponse openExchangeRatesResponse = responseEntity.getBody();
 
-        return fixerIoResponse2ExchangeRatesDto(openExchangeRatesResponse);
-    }
-
-    private ExchangeRatesDto fixerIoResponse2ExchangeRatesDto(FixerIoResponse fixerIoResponse) {
-        List<ExchangeRateDto> exchangeRatesDtos = fixerIoResponse2ExchangeRateDtoList(fixerIoResponse);
-
-        ExchangeRatesDto listExchangeRateDto = new ExchangeRatesDto();
-        listExchangeRateDto.setRates(exchangeRatesDtos);
+        ExchangeRatesDto listExchangeRateDto = mapper.fixerIoResponse2ExchangeRatesDto(openExchangeRatesResponse);
 
         String currentDate = getCurrentDate();
         listExchangeRateDto.setDate(currentDate);
@@ -66,19 +56,4 @@ public class FixerIoClient implements ExchangeRatesClient {
         return listExchangeRateDto;
     }
 
-
-    private List<ExchangeRateDto> fixerIoResponse2ExchangeRateDtoList(FixerIoResponse fixerIoResponse) {
-        return fixerIoResponse
-                .getRates()
-                .entrySet()
-                .stream()
-                .map(exchangeRate -> {
-                    ExchangeRateDto exchangeRatesDto = mapper.exchangeRate2ExchangeRateDto(exchangeRate);
-
-                    String currencyFrom = fixerIoResponse.getBase();
-                    exchangeRatesDto.setCurrencyFrom(currencyFrom);
-
-                    return exchangeRatesDto;
-                }).collect(Collectors.toList());
-    }
 }

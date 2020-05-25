@@ -16,7 +16,7 @@ public class ScheduledTasks {
         this.exchangeRatesService = exchangeRatesService;
     }
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void saveRatesFromAllSources() {
         exchangeRatesService.saveRatesFromAllSources();
     }

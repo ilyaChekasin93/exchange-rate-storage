@@ -9,8 +9,10 @@ import java.util.List;
 @AllArgsConstructor
 public class AllCurrencyByFromResponse {
 
-    String message;
+    private String time;
 
-    List<String> availableСurrencies;
+    private String message;
+
+    private List<String> availableСurrencies;
 
 }
