@@ -1,5 +1,6 @@
 package ru.exchange.rates.client.impl;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 import ru.exchange.rates.client.ExchangeRatesClient;
 import ru.exchange.rates.dto.ExchangeRatesDto;
@@ -21,9 +22,8 @@ public class OpenExchangeRatesClient implements ExchangeRatesClient {
 
     private OpenExchangeRatesMapper mapper;
 
+    @Value("${OER_PASSWORD}")
     private String password;
-
-    private static final String PASSWORD_ENV_NAME = "OER_PASSWORD";
 
     private static final String BASE_URL = "https://openexchangerates.org/api/";
 
@@ -31,7 +31,6 @@ public class OpenExchangeRatesClient implements ExchangeRatesClient {
     public OpenExchangeRatesClient(RestTemplateBuilder restTemplateBuilder, ExchangeRatesClientErrorHandler customErrorHandler, OpenExchangeRatesMapper mapper) {
         this.restTemplate = restTemplateBuilder.build();
         restTemplate.setErrorHandler(customErrorHandler);
-        this.password = System.getenv(PASSWORD_ENV_NAME);
         this.mapper = mapper;
     }
 
