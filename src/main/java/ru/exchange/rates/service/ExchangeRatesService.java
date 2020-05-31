@@ -1,5 +1,7 @@
 package ru.exchange.rates.service;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import ru.exchange.rates.dao.CurrencyEntityRepo;
 import ru.exchange.rates.dao.ExchangeRateRepo;
@@ -60,7 +62,11 @@ public class ExchangeRatesService {
         CurrencyEntity currencyTo = currencyEntityRepo.findByName(to)
                 .orElseThrow(() -> new CurrencyNotFoundException(to));
 
-        Double exchangeRateValue = exchangeRateRepo.findByFromAndTo(currencyFrom, currencyTo)
+        Pageable pageable = PageRequest.of(0, 1);
+
+        Double exchangeRateValue = exchangeRateRepo.findByFromAndTo(currencyFrom, currencyTo, pageable)
+                .get()
+                .findFirst()
                 .orElseThrow(() -> new ExchangeRateNotFoundException(from, to))
                 .getValue();
 
