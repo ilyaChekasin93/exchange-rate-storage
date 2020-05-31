@@ -128,11 +128,11 @@ public class ExchangeRatesService {
 
     private ExchangeRateSourceEntity getSourceByUrl(String url) {
         return exchangeRateSourceRepo.findByUrl(url)
-                .orElse(exchangeRateSourceRepo.saveAndFlush(new ExchangeRateSourceEntity(url)));
+                .orElseGet(() -> exchangeRateSourceRepo.saveAndFlush(new ExchangeRateSourceEntity(url)));
     }
 
     private CurrencyEntity getCurrencyEntityByName(String currencyName) {
         return currencyEntityRepo.findByName(currencyName)
-                .orElse(currencyEntityRepo.saveAndFlush(new CurrencyEntity(currencyName)));
+                .orElseGet(() -> currencyEntityRepo.saveAndFlush(new CurrencyEntity(currencyName)));
     }
 }
