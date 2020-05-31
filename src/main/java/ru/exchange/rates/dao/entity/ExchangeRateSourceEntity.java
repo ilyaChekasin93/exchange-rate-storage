@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "SOURCE")
 public class ExchangeRateSourceEntity {
 
     @Id

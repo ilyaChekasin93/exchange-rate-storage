@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "EXCHANGE_RATE")
 public class ExchangeRateEntity {
 
     @Id

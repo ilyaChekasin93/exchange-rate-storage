@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "CURRENCY")
 public class CurrencyEntity  {
 
     @Id
