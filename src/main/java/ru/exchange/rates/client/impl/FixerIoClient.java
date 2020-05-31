@@ -3,6 +3,7 @@ package ru.exchange.rates.client.impl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -12,6 +13,8 @@ import ru.exchange.rates.dto.ExchangeRatesDto;
 import ru.exchange.rates.mapper.FixerIoMapper;
 import ru.exchange.rates.model.FixerIoResponse;
 
+
+import java.util.concurrent.CompletableFuture;
 
 import static ru.exchange.rates.utils.DateUtils.getCurrentDate;
 
@@ -35,7 +38,8 @@ public class FixerIoClient implements ExchangeRatesClient {
         this.mapper = mapper;
     }
 
-    public ExchangeRatesDto getAllRates(){
+    @Async
+    public CompletableFuture<ExchangeRatesDto> getAllRates(){
         String url = UriComponentsBuilder
                 .fromHttpUrl(BASE_URL)
                 .queryParam("access_key", password)
@@ -52,7 +56,7 @@ public class FixerIoClient implements ExchangeRatesClient {
 
         listExchangeRateDto.setSource(BASE_URL);
 
-        return listExchangeRateDto;
+        return CompletableFuture.completedFuture(listExchangeRateDto);
     }
 
 }

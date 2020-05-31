@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.concurrent.CompletableFuture;
+
 import static ru.exchange.rates.utils.DateUtils.getCurrentDate;
 
 
@@ -34,7 +36,7 @@ public class OpenExchangeRatesClient implements ExchangeRatesClient {
         this.mapper = mapper;
     }
 
-    public ExchangeRatesDto getAllRates(){
+    public CompletableFuture<ExchangeRatesDto> getAllRates(){
         String url = UriComponentsBuilder
                 .fromHttpUrl(BASE_URL)
                 .queryParam("app_id", password)
@@ -51,6 +53,6 @@ public class OpenExchangeRatesClient implements ExchangeRatesClient {
 
         listExchangeRateDto.setSource(BASE_URL);
 
-        return listExchangeRateDto;
+        return CompletableFuture.completedFuture(listExchangeRateDto);
     }
 }

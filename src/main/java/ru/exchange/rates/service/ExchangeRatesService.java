@@ -3,15 +3,14 @@ package ru.exchange.rates.service;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import ru.exchange.rates.client.ExchangeRateClientScope;
 import ru.exchange.rates.dao.CurrencyEntityRepo;
 import ru.exchange.rates.dao.ExchangeRateRepo;
 import ru.exchange.rates.dao.ExchangeRateSourceRepo;
 import ru.exchange.rates.exception.CurrencyNotFoundException;
 import ru.exchange.rates.exception.ExchangeRateNotFoundException;
-import ru.exchange.rates.factory.ExchangeRateClientFactory;
 import org.springframework.stereotype.Service;
 import ru.exchange.rates.dao.entity.CurrencyEntity;
-import ru.exchange.rates.client.ExchangeRatesClient;
 import ru.exchange.rates.dao.entity.ExchangeRateEntity;
 import ru.exchange.rates.dao.entity.ExchangeRateSourceEntity;
 import ru.exchange.rates.dto.ExchangeRateDto;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 @Service
 public class ExchangeRatesService {
 
-    private List<ExchangeRatesClient> clients;
+    private ExchangeRateClientScope clientsScope;
 
     private ExchangeRateSourceRepo exchangeRateSourceRepo;
 
@@ -33,9 +32,9 @@ public class ExchangeRatesService {
     private ExchangeRateRepo exchangeRateRepo;
 
 
-    public ExchangeRatesService(ExchangeRateClientFactory clientFactory, ExchangeRateSourceRepo exchangeRateSourceRepo,
+    public ExchangeRatesService(ExchangeRateClientScope clientsScope, ExchangeRateSourceRepo exchangeRateSourceRepo,
                                 CurrencyEntityRepo сurrencyEntityRepo, ExchangeRateRepo exchangeRateRepo) {
-        this.clients = clientFactory.getAllExchangeRatesClients();
+        this.clientsScope = clientsScope;
         this.exchangeRateSourceRepo = exchangeRateSourceRepo;
         this.currencyEntityRepo = сurrencyEntityRepo;
         this.exchangeRateRepo = exchangeRateRepo;
@@ -43,9 +42,7 @@ public class ExchangeRatesService {
 
     @Transactional
     public void saveRatesFromAllSources() {
-        List<ExchangeRatesDto> exchangeRatesDtolist = clients.stream()
-                .map(ExchangeRatesClient::getAllRates)
-                .collect(Collectors.toList());
+        List<ExchangeRatesDto> exchangeRatesDtolist = clientsScope.getAllRates();
 
         List<ExchangeRateEntity> exchangeRateEntities = exchangeRatesDtolist.stream()
                 .map(ratesDto -> exchangeRatesDto2ListExchangeRateEntity(ratesDto))
