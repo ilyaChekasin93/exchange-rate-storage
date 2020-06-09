@@ -8,7 +8,7 @@ import java.util.Map;
 @Data
 public class FixerIoResponse {
 
-    private String success;
+    private boolean success;
 
     private String date;
 

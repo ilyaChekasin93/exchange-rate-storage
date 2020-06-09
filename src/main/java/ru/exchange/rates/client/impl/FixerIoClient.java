@@ -10,6 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import ru.exchange.rates.client.ExchangeRatesClient;
 import ru.exchange.rates.client.handler.ExchangeRatesClientErrorHandler;
 import ru.exchange.rates.dto.ExchangeRatesDto;
+import ru.exchange.rates.exception.ExchangeRateClientException;
 import ru.exchange.rates.mapper.FixerIoMapper;
 import ru.exchange.rates.model.FixerIoResponse;
 
@@ -48,6 +49,10 @@ public class FixerIoClient implements ExchangeRatesClient {
 
         ResponseEntity<FixerIoResponse> responseEntity = restTemplate.getForEntity(url, FixerIoResponse.class);
         FixerIoResponse fixerIoResponse = responseEntity.getBody();
+
+        if(!fixerIoResponse.isSuccess())
+            throw new ExchangeRateClientException();
+
 
         ExchangeRatesDto listExchangeRateDto = mapper.fixerIoResponse2ExchangeRatesDto(fixerIoResponse);
 

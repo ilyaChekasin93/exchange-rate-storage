@@ -10,8 +10,14 @@ public class ExchangeRateClientException extends AppBaseException {
 
     private static final String ERROR_PREFIX = "There was an error with the currency exchange client: ";
 
+    private static final String DEFAULT_ERROR_MESSAGE = "Service failed";
+
     public ExchangeRateClientException(String message){
         super(ERROR_PREFIX + message);
+    }
+
+    public ExchangeRateClientException(){
+        super(DEFAULT_ERROR_MESSAGE);
     }
 
 }
