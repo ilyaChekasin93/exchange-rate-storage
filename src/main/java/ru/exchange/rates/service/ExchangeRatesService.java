@@ -4,7 +4,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import ru.exchange.rates.client.ExchangeRateClientScope;
-import ru.exchange.rates.dao.CurrencyEntityRepo;
+import ru.exchange.rates.dao.CurrencyRepo;
 import ru.exchange.rates.dao.ExchangeRateRepo;
 import ru.exchange.rates.dao.ExchangeRateSourceRepo;
 import ru.exchange.rates.exception.CurrencyNotFoundException;
@@ -27,13 +27,13 @@ public class ExchangeRatesService {
 
     private ExchangeRateSourceRepo exchangeRateSourceRepo;
 
-    private CurrencyEntityRepo currencyEntityRepo;
+    private CurrencyRepo currencyEntityRepo;
 
     private ExchangeRateRepo exchangeRateRepo;
 
 
     public ExchangeRatesService(ExchangeRateClientScope clientsScope, ExchangeRateSourceRepo exchangeRateSourceRepo,
-                                CurrencyEntityRepo сurrencyEntityRepo, ExchangeRateRepo exchangeRateRepo) {
+                                CurrencyRepo сurrencyEntityRepo, ExchangeRateRepo exchangeRateRepo) {
         this.clientsScope = clientsScope;
         this.exchangeRateSourceRepo = exchangeRateSourceRepo;
         this.currencyEntityRepo = сurrencyEntityRepo;

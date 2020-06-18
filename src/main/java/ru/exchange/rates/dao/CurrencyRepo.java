@@ -10,7 +10,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface CurrencyEntityRepo extends JpaRepository<CurrencyEntity, Long> {
+public interface CurrencyRepo extends JpaRepository<CurrencyEntity, Long> {
 
     Optional<CurrencyEntity> findByName(String name);
 
